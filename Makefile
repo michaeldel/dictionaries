@@ -31,7 +31,7 @@ trim: $(dictionaries)
 		diff $$f <(./scripts/trim.sh $$f) > /dev/null || ./scripts/trim.sh -i $$f; \
 	done
 
-install: $(dictionaries)
+install: check $(dictionaries)
 	install -d $(DESTDIR)$(PREFIX)/share/dict
 	install -m 644 $(dictionaries) $(DESTDIR)$(PREFIX)/share/dict
 
