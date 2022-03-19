@@ -22,12 +22,12 @@ docker/names:
 
 install:
 	install -d $(DESTDIR)$(PREFIX)/share/dict
-	install -m 644 adjectives animals colors countries names star-wars \
+	install -m 644 adjectives animals colors countries elements names star-wars \
 		$(DESTDIR)$(PREFIX)/share/dict
 
 uninstall:
 	pushd $(DESTDIR)$(PREFIX)/share/dict && \
-	rm -f adjectives animals colors countries names star-wars && \
+	rm -f adjectives animals colors countries elements names star-wars && \
 	popd
 
 clean:
