@@ -3,6 +3,7 @@ include config.mk
 docker-url = 'https://raw.githubusercontent.com/moby/moby/master/pkg/namesgenerator/names-generator.go' 
 
 all: docker/adjectives docker/names
+dictionaries = adjectives animals colors countries elements names star-wars
 
 docker/adjectives:
 	mkdir -p docker
@@ -20,17 +21,25 @@ docker/names:
 		sed -n -E 's/\t*"(.+)",$$/\1/p' \
 		> $@
 
-install:
-	install -d $(DESTDIR)$(PREFIX)/share/dict
-	install -m 644 adjectives animals colors countries elements names star-wars \
-		$(DESTDIR)$(PREFIX)/share/dict
+check: $(dictionaries)
+	@for f in $^; do \
+		diff $$f <(./scripts/trim.sh $$f) > /dev/null || echo "$$f must be trimmed"; \
+	done
 
-uninstall:
+trim: $(dictionaries)
+	for f in $^; do \
+		diff $$f <(./scripts/trim.sh $$f) > /dev/null || ./scripts/trim.sh -i $$f; \
+	done
+
+install: $(dictionaries)
+	install -d $(DESTDIR)$(PREFIX)/share/dict
+	install -m 644 $(dictionaries) $(DESTDIR)$(PREFIX)/share/dict
+
+uninstall: $(dictionaries)
 	pushd $(DESTDIR)$(PREFIX)/share/dict && \
-	rm -f adjectives animals colors countries elements names star-wars && \
-	popd
+	rm -f $(dictionaries) && popd
 
 clean:
 	rm -rf docker
 
-.PHONY: all clean install uninstall
+.PHONY: all check clean install trim uninstall
